@@ -10,7 +10,7 @@ def hello_world():
 
 @app.route('/login', methods=['POST','GET'])
 def login():
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.get_json()
         verification = verify_user(data)
     else:
