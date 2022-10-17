@@ -43,19 +43,18 @@ def query_db(username):
 
 
 def verify_user(user_information):
-    verify_username = user_information['username']
-    verify_password = user_information['password']
 
-    verify_user = {
-        'username' : verify_username,
-        'password' : verify_password
-    }
+    user = query_db(username=user_information)
 
-    user = query_db(username=verify_user['username'])
-    print(user)
     if user['username'] is not '':
-        return 'User verified'
+        response = {
+            'response' : 'user verified'
+        }
+        return response
     else:
-        return 'User does not exist'
+        response = {
+            'response' : 'user is not verified'
+        }
+        return response
     
 
