@@ -46,7 +46,7 @@ def verify_user(user_information):
 
     user = query_db(username=user_information)
 
-    if user['username'] is not '':
+    if user['username'] != '':
         response = {
             'response' : 'user verified'
         }
