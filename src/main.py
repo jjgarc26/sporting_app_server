@@ -31,7 +31,7 @@ def login(username):
         )
     
     return response
-@app.route('/createAccount', methods=['POST'])
+@app.route('/create_account', methods=['POST'])
 def create_account():
     try:
         new_account_info = request.get_json()
