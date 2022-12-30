@@ -15,12 +15,18 @@ def create_new_account (user_info ):
         cur = connection.cursor()
         table_name = os.getenv('POSTGRES_TABLE_NAME')
 
-        # columns = list(user_info.keys())
         values = tuple(user_info.values())
 
-        insert_query_statement = sql.SQL("INSERT INTO {} (first_name, middle_name, last_name, gender, email, date_of_birth, user_id, password) VALUES %s;").format(sql.Identifier(table_name))
+        insert_query_statement = sql.SQL("""
+        INSERT INTO {tableName} 
+        (first_name, middle_name, 
+        last_name, gender, email,
+        date_of_birth, 
+        user_id, password)
+        VALUES {values};
+        """).format(tableName = sql.Identifier(table_name),values = sql.Literal(values))
 
-        cur.execute(insert_query_statement,(values,))
+        cur.execute(insert_query_statement)
 
         connection.commit()
         return 'User was successfully created'
