@@ -1,23 +1,30 @@
 import json
 import os
-import psycopg2
 
+from psycopg2 import connect, sql
 from dotenv import load_dotenv, find_dotenv
 from postgres.db_config import db_configuration
 
 load_dotenv(find_dotenv())
 
-def query_db(username):
+def verify_user(username):
 
     connection = None
     try:
+        # set connection up for db
         configurations = db_configuration()
-        connection = psycopg2.connect(**configurations)
+        connection = connect(**configurations)
         cur = connection.cursor()
+        table_name = os.getenv('POSTGRES_TABLE_NAME')
 
-        postgres_query_command = f"SELECT user_id, password from {os.getenv('POSTGRES_TABLE_NAME')} WHERE user_id = %s"
-        
-        cur.execute(postgres_query_command,(username,))
+        #creates select query statement for DB
+        select_query_statement = sql.SQL("""
+        SELECT user_id, password 
+        from {tableName}
+        WHERE user_id = {userId};
+        """).format(tableName = sql.Identifier(table_name), userId = sql.Literal(username))
+
+        cur.execute(select_query_statement)
         user = cur.fetchall()
 
         user_credentials = {
@@ -29,10 +36,15 @@ def query_db(username):
             user_credentials['username'] = row[0]
             user_credentials['password'] = row[1]
         
-        print(user_credentials)
-        return user_credentials
+        response = {}
+        if user_credentials['username'] != '':
+            response['response'] = 'user is verified'
 
-    except (Exception, psycopg2.Error) as error:
+        else:
+            response['response'] = 'user is not verified'
+        return response
+
+    except (Exception) as error:
         print('An error has occurred', error)
 
     finally:
@@ -41,20 +53,5 @@ def query_db(username):
             connection.close()
             print('Db connection closed')
 
-
-def verify_user(user_information):
-
-    user = query_db(username=user_information)
-
-    if user['username'] != '':
-        response = {
-            'response' : 'user verified'
-        }
-        return response
-    else:
-        response = {
-            'response' : 'user is not verified'
-        }
-        return response
     
 

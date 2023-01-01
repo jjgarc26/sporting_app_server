@@ -1,5 +1,3 @@
-from jinja2 import Undefined
-
 from dotenv import load_dotenv, find_dotenv
 from configparser import ConfigParser
 
